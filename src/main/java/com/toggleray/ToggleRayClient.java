@@ -119,7 +119,7 @@ public class ToggleRayClient implements ClientModInitializer {
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
         RenderSystem.lineWidth(2.5f);
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
