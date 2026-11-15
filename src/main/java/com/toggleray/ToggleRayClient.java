@@ -1,4 +1,5 @@
 package com.toggleray;
+
 import net.minecraft.client.gl.ShaderProgramKeys;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ClientModInitializer;
@@ -30,7 +31,6 @@ public class ToggleRayClient implements ClientModInitializer {
     private static final List<BlockPos> lavaPositions = new ArrayList<>();
     private static int tickCounter = 0;
 
-    // Scan radius in blocks (32 blocks in every direction = 64x64x64 cube)
     private static final int SCAN_RADIUS = 32;
 
     @Override
@@ -59,7 +59,6 @@ public class ToggleRayClient implements ClientModInitializer {
                 }
             }
 
-            // Re-scan every 10 ticks (0.5 seconds) while enabled so it stays smooth
             if (enabled && client.world != null && client.player != null) {
                 tickCounter++;
                 if (tickCounter >= 10) {
@@ -89,7 +88,6 @@ public class ToggleRayClient implements ClientModInitializer {
                     if (state.isOf(Blocks.ANCIENT_DEBRIS)) {
                         foundDebris.add(mutablePos.toImmutable());
                     } else if (state.isOf(Blocks.LAVA)) {
-                        // Catches both source blocks and every flowing lava block
                         foundLava.add(mutablePos.toImmutable());
                     }
                 }
@@ -113,7 +111,6 @@ public class ToggleRayClient implements ClientModInitializer {
         matrices.push();
         matrices.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-        // Disable depth test so outlines glow right through walls
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -125,19 +122,16 @@ public class ToggleRayClient implements ClientModInitializer {
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        // Draw White outlines for Ancient Debris (RGBA: 1.0, 1.0, 1.0, 1.0)
         for (BlockPos pos : debrisPositions) {
             drawBoxOutline(buffer, matrix, pos, 1.0f, 1.0f, 1.0f, 1.0f);
         }
 
-        // Draw Red outlines for all Lava (RGBA: 1.0, 0.1, 0.1, 0.85)
         for (BlockPos pos : lavaPositions) {
             drawBoxOutline(buffer, matrix, pos, 1.0f, 0.1f, 0.1f, 0.85f);
         }
 
         BufferRenderer.drawWithGlobalProgram(buffer.end());
 
-        // Restore default GL states so we don't mess up normal game rendering
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
@@ -152,19 +146,16 @@ public class ToggleRayClient implements ClientModInitializer {
         float y2 = y1 + 1.0f;
         float z2 = z1 + 1.0f;
 
-        // Bottom square
         line(buffer, matrix, x1, y1, z1, x2, y1, z1, r, g, b, a);
         line(buffer, matrix, x2, y1, z1, x2, y1, z2, r, g, b, a);
         line(buffer, matrix, x2, y1, z2, x1, y1, z2, r, g, b, a);
         line(buffer, matrix, x1, y1, z2, x1, y1, z1, r, g, b, a);
 
-        // Top square
         line(buffer, matrix, x1, y2, z1, x2, y2, z1, r, g, b, a);
         line(buffer, matrix, x2, y2, z1, x2, y2, z2, r, g, b, a);
         line(buffer, matrix, x2, y2, z2, x1, y2, z2, r, g, b, a);
         line(buffer, matrix, x1, y2, z2, x1, y2, z1, r, g, b, a);
 
-        // Vertical pillars
         line(buffer, matrix, x1, y1, z1, x1, y2, z1, r, g, b, a);
         line(buffer, matrix, x2, y1, z1, x2, y2, z1, r, g, b, a);
         line(buffer, matrix, x2, y1, z2, x2, y2, z2, r, g, b, a);
