@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "toggleray",
+  "version": "1.0.0",
+  "name": "Toggle ray",
+  "description": "Highlights Ancient Debris in white and all Lava in red through walls, toggled with the Menu key.",
+  "authors": ["You"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.toggleray.ToggleRayClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.4",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
